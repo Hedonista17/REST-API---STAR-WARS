@@ -51,8 +51,9 @@ def get_people():
 @app.route('/people', methods=['POST'])
 def create_people():
     data = request.get_json()
-    new_people=  People(data['name'], data['birth_date'],data['description'])
-    #db.session
+    new_people =  People(data['name'], data['birth_date'],data['description'])
+    db.session.add(new_people)
+    db.session.commit()
     return jsonify(serialize_all_people), 200
 
 
