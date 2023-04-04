@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User,People
+from models import db, User,People,Planet
 #from models import Person
 
 app = Flask(__name__)
@@ -55,6 +55,12 @@ def create_people():
     db.session.add(new_people)
     db.session.commit()
     return jsonify(serialize_all_people), 200
+
+@app.route('/planet', methods=['GET'])
+def get_planet():
+    all_planet= Planet.query.all() ## consulta model.py
+    serialize_all_planet = list(map(lambda planet : planet.serialize(),all_planet)) #mapeo
+    return jsonify(serialize_all_planet), 200
 
 
 

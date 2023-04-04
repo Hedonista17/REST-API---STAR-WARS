@@ -41,7 +41,7 @@ class People(db.Model):
     name= db.Column(db.String(120), unique=True, nullable=False)
     birth_date= db.Column(db.String(120), unique=True, nullable=False)
     description= db.Column(db.String(120), unique=True, nullable=False)
-    planet_id = db.Column(db.Integer, db.ForeignKey("planet.id"), nullable=False) #relacion de tabla.id
+    planet_id = db.Column(db.Integer, db.ForeignKey("planet.id")) #relacion de tabla.id
     planet= db.relationship("Planet") #relacion entre clases 
     eye_color=db.Column(db.String(120), unique=True, nullable=False)
     hair_color=db.Column(db.String(120), unique=True, nullable=False)
@@ -87,7 +87,7 @@ class Planet(db.Model):
      self.population=population
      self.terrain=terrain
      self.climate=climate
-     self.people_id= people_id
+     
 
     def serialize(self):
         return {
@@ -97,8 +97,7 @@ class Planet(db.Model):
           "population":self.population,
           "terrain": self.terrain,
           "climate":self.climate,
-          "people_id":self.people_id
-
+          
         }
 
 
