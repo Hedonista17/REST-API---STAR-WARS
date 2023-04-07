@@ -40,6 +40,35 @@ def sitemap():
 
     ##RUTAS 
 
+@app.route('/users', methods=['GET'])
+def get_users():
+    all_users= User.query.all() ## consulta model.py
+    serialize_all_users = list(map(lambda user : user.serialize(),all_users)) #mapeo
+    return jsonify(serialize_all_users), 200
+
+@app.route('/users', methods=['POST'])          ###NOOOOO VAAAA ESTOOO DA ERROR DE OBJECT
+def create_users():
+    data = request.get_json() # con esto obtenemos en formato json la peticion del body 
+    new_user = User(data['email'], data['user_name'], data['first_name'], data['last_name'])
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify(new_user), 200
+
+@app.route('/users/<int:id>', methods=['GET'])
+def get_user_id(id):
+    user = User.query.get(id)
+    return(jsonify(user.serialize())), 200
+
+
+
+@app.route('/user/favorites', methods=['GET']) ## POR REVISAR 
+def get_users_favs():
+    all_favs= Favorites.query.all() ## consulta model.py
+    serialize_favs = list(map(lambda user : user.serialize(),all_favs)) #mapeo
+    return jsonify(serialize_all_users), 200
+
+
+
 
 
 @app.route('/people', methods=['GET'])
@@ -48,21 +77,33 @@ def get_people():
     serialize_all_people = list(map(lambda people : people.serialize(),all_people)) #mapeo
     return jsonify(serialize_all_people), 200
 
+@app.route('/people/<int:id>', methods=['GET'])
+def get_people_id(id):
+    people = People.query.get(id)
+    return(jsonify(people.serialize())), 200
+
+
+
 @app.route('/people', methods=['POST'])
 def create_people():
     data = request.get_json()
-    new_people =  People(data['name'], data['birth_date'],data['description'])
+    new_people =  People(data['name'], data['birth_date'],data['description'],data['eye_color'],data['hair_color'])
     db.session.add(new_people)
     db.session.commit()
-    return jsonify(serialize_all_people), 200
+    return jsonify(new_people), 200
 
-@app.route('/planet', methods=['GET'])
+
+
+@app.route('/planets', methods=['GET'])
 def get_planet():
     all_planet= Planet.query.all() ## consulta model.py
     serialize_all_planet = list(map(lambda planet : planet.serialize(),all_planet)) #mapeo
     return jsonify(serialize_all_planet), 200
 
-
+@app.route('/planets/<int:id>', methods=['GET'])
+def get_planets_id(id):
+    planets = Planet.query.get(id)
+    return(jsonify(planets.serialize())), 200
 
 
 

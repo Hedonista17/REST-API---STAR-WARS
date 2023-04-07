@@ -11,29 +11,30 @@ class User(db.Model):
     first_name= db.Column(db.String(50),nullable=False)
     last_name= db.Column(db.String(50),nullable=False)
     register_data = db.Column(db.String(50),nullable=False)
-    favorites= db.relationship("Favorites")  ##relacion entre clases  1 a N = multiples favoritos,
+    favorites= db.relationship("Favorites")  # relacion entre clases  1 a N = multiples favoritos,
+
+    def __repr__(self):
+        return '<User %r>' % self.user_name  # con esta forma en la bd pinta el self que queramos en esta caso el usuario en vez de poner  <User 1 por ejemplo>
 
 
-    def __init__(self):
-        self.id=id
+    def __init__(self,email,user_name,first_name,last_name):  #inicio 
         self.email= email
-        self.is_active = True
         self.user_name = user_name
         self.first_name = first_name
         self.last_name = last_name
-        self.register_data= register_data
+        self.is_active = True
+    
 
-    def serialize(self):
+    def serialize(self):  #transformo a diccionario  la clase
         return {
             "id": self.id,
             "email": self.email,
-            "is_active":self.is_active,
             "user_name":self.user_name,
             "first_name":self.user_name,
             "last_name":self.last_name,
-            "register_data": self.register_data,
             # do not serialize the password, its a security breach
         }
+
 
 
 class People(db.Model):
@@ -47,12 +48,10 @@ class People(db.Model):
     hair_color=db.Column(db.String(120), unique=True, nullable=False)
     favorites= db.relationship("Favorites")
 
-    def __init__(self):
-      self.id= id
+    def __init__(self,name,birth_date,description,eye_color,hair_color):
       self.name= name
       self.birth_date = birth_date
       self.description= description
-      self.planet_id =  planet_id
       self.eye_color= eye_color
       self.hair_color=hair_color
 
