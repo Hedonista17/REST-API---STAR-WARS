@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+import datetime
 
 db = SQLAlchemy()
 
@@ -8,24 +9,25 @@ class User(db.Model):
     password = db.Column(db.String(80), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
     user_name = db.Column(db.String(25),nullable=False)
-    first_name= db.Column(db.String(50),nullable=False)
-    last_name= db.Column(db.String(50),nullable=False)
-    register_data = db.Column(db.String(50),nullable=False)
-    favorites= db.relationship("Favorites")  # relacion entre clases  1 a N = multiples favoritos,
+    first_name = db.Column(db.String(50),nullable=False)
+    last_name = db.Column(db.String(50),nullable=False)
+    register_data = db.Column(db.String(50),nullable=False)  
+    favorites = db.relationship("Favorites")  # relacion entre clases  1 a N = multiples favoritos,
 
     def __repr__(self):
-        return '<User %r>' % self.user_name  # con esta forma en la bd pinta el self que queramos en esta caso el usuario en vez de poner  <User 1 por ejemplo>
+        return '<User %r>' % self.user_name  # con esta forma en la bd pinta el self que queramos en esta caso el nombre de usuario en vez de poner  <User 1 por ejemplo>
 
 
-    def __init__(self,email,user_name,first_name,last_name):  #inicio 
-        self.email= email
+    def __init__(self,email,user_name,first_name,last_name,password):  #inicio las columnas que quiero, son los datos que introduciré 
+        self.email = email
         self.user_name = user_name
         self.first_name = first_name
         self.last_name = last_name
-        self.is_active = True
-    
+        self.is_active = datetime.datetime.now()  # COMPROBAR SI ES CORRECTO ESTA FORMA 
+        self.password = password   
+        
 
-    def serialize(self):  #transformo a diccionario  la clase
+    def serialize(self):  #transformo a diccionario  los datos para ver una respuesta JSON /enviar a JSON
         return {
             "id": self.id,
             "email": self.email,
@@ -38,24 +40,27 @@ class User(db.Model):
 
 
 class People(db.Model):
-    id= db.Column(db.Integer,primary_key=True)
-    name= db.Column(db.String(120), unique=True, nullable=False)
-    birth_date= db.Column(db.String(120), unique=True, nullable=False)
-    description= db.Column(db.String(120), unique=True, nullable=False)
+    id = db.Column(db.Integer,primary_key=True)
+    name = db.Column(db.String(120), unique=True, nullable=False)
+    birth_date = db.Column(db.String(120), unique=True, nullable=False)
+    description = db.Column(db.String(120), unique=True, nullable=False)
     planet_id = db.Column(db.Integer, db.ForeignKey("planet.id")) #relacion de tabla.id
-    planet= db.relationship("Planet") #relacion entre clases 
-    eye_color=db.Column(db.String(120), unique=True, nullable=False)
-    hair_color=db.Column(db.String(120), unique=True, nullable=False)
-    favorites= db.relationship("Favorites")
+    planet = db.relationship("Planet") #relacion entre clases 
+    eye_color = db.Column(db.String(120), unique=True, nullable=False)
+    hair_color = db.Column(db.String(120), unique=True, nullable=False)
+    favorites = db.relationship("Favorites")
+
+    def __repr__(self):
+        return '<People %r>' % self.name
 
     def __init__(self,name,birth_date,description,eye_color,hair_color):
-      self.name= name
+      self.name = name
       self.birth_date = birth_date
-      self.description= description
-      self.eye_color= eye_color
-      self.hair_color=hair_color
+      self.description = description
+      self.eye_color = eye_color
+      self.hair_color = hair_color
 
-      def serialize(self):
+    def serialize(self):
         return{
             "id": self.id,
             "name":self.name,
@@ -68,24 +73,26 @@ class People(db.Model):
 
 
 class Planet(db.Model):
-    id= db.Column(db.Integer,primary_key=True)
-    name= db.Column(db.String(120), unique=True, nullable=False)
-    description= db.Column(db.String(120), unique=True, nullable=False)
-    population=db.Column(db.Integer)
-    terrain= db.Column(db.String(120), unique=True, nullable=False)
-    climate= db.Column(db.String(120), unique=True, nullable=False)
+    id = db.Column(db.Integer,primary_key=True)
+    name = db.Column(db.String(120), unique=True, nullable=False)
+    description = db.Column(db.String(120), unique=True, nullable=False)
+    population = db.Column(db.Integer)
+    terrain = db.Column(db.String(120), unique=True, nullable=False)
+    climate = db.Column(db.String(120), unique=True, nullable=False)
     people = db.relationship("People")
-    favorites= db.relationship("Favorites")
+    favorites = db.relationship("Favorites")
+
+    def __repr__(self):
+        return '<Planet %r>' % self.name
     
 
-    def __init__(self):
+    def __init__(self,name,description,population,terrain,climate):
 
-     self.id= id
-     self.name= name
-     self.description=description
-     self.population=population
-     self.terrain=terrain
-     self.climate=climate
+     self.name = name
+     self.description = description
+     self.population = population
+     self.terrain = terrain
+     self.climate = climate
      
 
     def serialize(self):
@@ -112,7 +119,7 @@ class Favorites(db.Model):
 
 
     def __init__(self):
-     self.id = id
+
      self.planets_id = planets_id
      self.people_id = people_id
 
@@ -120,6 +127,7 @@ class Favorites(db.Model):
     def serialize(self):
       return {
          "id":self.id,
+         "user_id":self.user_id,
          "people_id":self.people_id,
          "planet_id":self.planets_id,
 
