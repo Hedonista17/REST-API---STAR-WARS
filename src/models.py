@@ -25,6 +25,7 @@ class User(db.Model):
         self.last_name = last_name
         self.is_active = datetime.datetime.now()  # COMPROBAR SI ES CORRECTO ESTA FORMA 
         self.password = password   
+        # self.favorites = favorites.serialize() CONSULTAR
         
 
     def serialize(self):  #transformo a diccionario  los datos para ver una respuesta JSON /enviar a JSON
@@ -116,10 +117,11 @@ class Favorites(db.Model):
     user= db.relationship("User", back_populates="favorites") ##union de clases y tabla    #relacion class y unir tablas- inner join                           #relacion entre las class 
     planet= db.relationship("Planet",back_populates="favorites")
     people= db.relationship("People",back_populates="favorites") #insertar en la tabla favoritos las clases 
+    
 
+    def __init__(self,user_id,planets_id,people_id):
 
-    def __init__(self):
-
+     self.user_id = user_id
      self.planets_id = planets_id
      self.people_id = people_id
 

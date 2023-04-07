@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User,People,Planet
+from models import db, User,People,Planet,Favorites
 #from models import Person
 
 app = Flask(__name__)
@@ -114,7 +114,13 @@ def create_planet():
     return jsonify(new_planet.serialize()), 200
 
 
-
+@app.route('/favorites/planets/<int:id>', methods=['POST'])
+def favorite_planet(id):
+    data = request.get_json(id)
+    fav_planet =  Favorites(data['planet_id'])
+    db.session.add(fav_planet)
+    db.session.commit()
+    return jsonify(fav_planet.serialize()), 200 # FALTA EL POST FAVORITOS DE PEOPLE MAS LOS DELETE 
 
 
 
