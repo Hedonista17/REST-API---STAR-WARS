@@ -11,7 +11,7 @@ class User(db.Model):
     user_name = db.Column(db.String(25),nullable=False)
     first_name = db.Column(db.String(50),nullable=False)
     last_name = db.Column(db.String(50),nullable=False)
-    register_data = db.Column(db.String(50),nullable=False)  
+    register_data =db.Column(db.Date, default = datetime.datetime()) #CONSULTAR 
     favorites = db.relationship("Favorites")  # relacion entre clases  1 a N = multiples favoritos,
 
     def __repr__(self):
@@ -23,7 +23,7 @@ class User(db.Model):
         self.user_name = user_name
         self.first_name = first_name
         self.last_name = last_name
-        self.is_active = datetime.datetime.now()  # COMPROBAR SI ES CORRECTO ESTA FORMA 
+        self.is_active = True  # COMPROBAR SI ES CORRECTO ESTA FORMA 
         self.password = password   
         # self.favorites = favorites.serialize() CONSULTAR
         
@@ -49,6 +49,7 @@ class People(db.Model):
     planet = db.relationship("Planet") #relacion entre clases 
     eye_color = db.Column(db.String(120), unique=True, nullable=False)
     hair_color = db.Column(db.String(120), unique=True, nullable=False)
+    vehicles = db.relationship("Vehicles",back_populates='people')
     favorites = db.relationship("Favorites")
 
     def __repr__(self):
@@ -108,22 +109,58 @@ class Planet(db.Model):
         }
 
 
+class Vehicles(db.Model):
+    id = db.Column(db.Integer,primary_key=True)
+    name = db.Column(db.String(120), unique=True, nullable=False)
+    description = db.Column(db.String(120), unique=True, nullable=False)
+    model = db.Column(db.String(120), unique=True, nullable=True)
+    pilots =  db.Column(db.Integer, db.ForeignKey("people.id")) 
+    people = db.relationship("People",back_populates='vehicles')
+    favorites = db.relationship("Favorites")
+
+    def __repr__(self):
+        return '<Vehicles %r>' % self.name
+    
+
+    def __init__(self,name,description,model,pilots):
+
+     self.name = name
+     self.description = description
+     self.model = model
+     self.pilots = pilots
+     
+
+    def serialize(self):
+        return {
+          "id": self.id,
+          "name":self.name,
+          "description":self.description,
+          "model": self.model,
+          "pilots":self.pilots,
+          
+        }
+
+
+
 
 class Favorites(db.Model):
-    id= db.Column(db.Integer,primary_key=True)
-    user_id= db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-    planets_id= db.Column(db.Integer,db.ForeignKey("planet.id"))          #nombre de la table + id
-    people_id= db.Column(db.Integer, db.ForeignKey("people.id"))
+    id = db.Column(db.Integer,primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    planets_id = db.Column(db.Integer,db.ForeignKey("planet.id"))          #nombre de la table + id
+    people_id = db.Column(db.Integer, db.ForeignKey("people.id"))
+    vehicles_id = db.Column(db.Integer, db.ForeignKey("vehicles.id"))
     user= db.relationship("User", back_populates="favorites") ##union de clases y tabla    #relacion class y unir tablas- inner join                           #relacion entre las class 
     planet= db.relationship("Planet",back_populates="favorites")
     people= db.relationship("People",back_populates="favorites") #insertar en la tabla favoritos las clases 
+    vehicles= db.relationship("Vehicles",back_populates="favorites")
     
 
-    def __init__(self,user_id,planets_id,people_id):
+    def __init__(self,user_id,planets_id,people_id,vehicles_id):
 
      self.user_id = user_id
      self.planets_id = planets_id
      self.people_id = people_id
+     self.vehicles_id = vehicles_id
 
 
     def serialize(self):
@@ -132,6 +169,7 @@ class Favorites(db.Model):
          "user_id":self.user_id,
          "people_id":self.people_id,
          "planet_id":self.planets_id,
+         "vehicles_id":self.vehicles_id
 
       }
 
