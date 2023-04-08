@@ -1,6 +1,6 @@
 import os
 from flask_admin import Admin
-from models import db, User,People,Planet,Favorites
+from models import db, User,People,Planet,Favorites,Vehicles
 from flask_admin.contrib.sqla import ModelView
 
 def setup_admin(app):
@@ -13,7 +13,8 @@ def setup_admin(app):
     admin.add_view(ModelView(User, db.session))
     admin.add_view(ModelView(People, db.session))
     admin.add_view(ModelView(Planet, db.session))
-    admin.add_view(ModelView(Favorites, db.session))   
+    admin.add_view(ModelView(Favorites, db.session))  
+    admin.add_view(ModelView(Vehicles, db.session)) 
     # Para añadir los modelos de clase a las tablas  y poder visualizarlas en la web 
     # You can duplicate that line to add mew models
     # admin.add_view(ModelView(YourModelName, db.session))

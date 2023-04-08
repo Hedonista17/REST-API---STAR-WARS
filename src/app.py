@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User,People,Planet,Favorites
+from models import db, User,People,Planet,Favorites,Vehicles
 #from models import Person
 
 app = Flask(__name__)
@@ -60,19 +60,6 @@ def create_users():
     return jsonify(new_user.serialize()), 200
 
 
-
-
-
-@app.route('/user/favorites', methods=['GET']) ## POR REVISAR 
-def get_users_favs():
-    all_favs = Favorites.query.all() ## consulta model.py
-    serialize_favs = list(map(lambda user : user.serialize(),all_favs)) #mapeo
-    return jsonify(serialize_all_users), 200
-
-
-
-
-
 @app.route('/people', methods=['GET'])
 def get_people():
     all_people = People.query.all() ## consulta model.py
@@ -114,16 +101,62 @@ def create_planet():
     return jsonify(new_planet.serialize()), 200
 
 
-@app.route('/favorites/planets/<int:id>', methods=['POST'])
-def favorite_planet(id):
-    data = request.get_json(id)
-    fav_planet =  Favorites(data['planet_id'])
-    db.session.add(fav_planet)
+
+@app.route('/vehicles', methods=['GET'])
+def get_vehicles():
+    all_vehicles= Vehicles.query.all() # consulta model.py
+    serialize_all_vehicles = list(map(lambda vehicle : vehicle.serialize(),all_vehicles)) #mapeo
+    return jsonify( serialize_all_vehicles), 200
+
+@app.route('/vehicles/<int:id>', methods=['GET'])
+def get_vehicle_id(id):
+    vehicle = Vehicles.query.get(id)
+    return(jsonify(vehicle.serialize())), 200
+
+@app.route('/vehicles', methods=['POST'])
+def create_vehicle():
+    data = request.get_json()
+    new_vehicle =  Vehicles(data['name'], data['description'],data['model'],data['pilots'])
+    db.session.add(new_vehicle)
     db.session.commit()
-    return jsonify(fav_planet.serialize()), 200 # FALTA EL POST FAVORITOS DE PEOPLE MAS LOS DELETE 
+    return jsonify(new_vehicle.serialize()), 200
 
 
+@app.route('/favorites', methods=['GET'])
+def get_favorites():
+    all_favs = Favorites.query.all() # consulta model.py
+    serialize_favs = list(map(lambda fav : fav.serialize(),all_favs)) #mapeo
+    return jsonify( serialize_favs), 200
 
+
+# @app.route('/favorites/planets', methods=['GET'])
+# def get_fav_planets():
+#     favs_planets = Favorites.query.get(planet) # consulta model.py
+#     return jsonify(favs_planets.serialize()), 200
+    
+# @app.route('/favorites/planets/<int:id>', methods=['POST'])
+# def favorite_planet(id):
+#     data = request.get_json(id)
+#     fav_planet =  Favorites(data['planet_id'])
+#     db.session.add(fav_planet)
+#     db.session.commit()
+#     return jsonify(fav_planet.serialize()), 200 # FALTA  LOS DELETE 
+
+
+# @app.route('/favorites/planets/<int:id>', methods=['POST'])
+# def favorite_planet(id):
+#     data = request.get_json(id)
+#     fav_planet =  Favorites(data['planet_id'])
+#     db.session.add(fav_planet)
+#     db.session.commit()
+#     return jsonify(fav_planet.serialize()), 200 # FALTA  LOS DELETE 
+
+
+# @app.route('/user/favorites', methods=['GET']) ## POR REVISAR // OBTENER LOS FAVORITOS DE CADA USUARIO // DESPUES BORRAR LOS FAVS POR USUARIO 
+# def get_users_favs():                          ## HACER UN POST 
+#     all_favs = Favorites.query.all() ## consulta model.py
+#     serialize_favs = list(map(lambda user : user.serialize(),all_favs)) #mapeo
+#     return jsonify(serialize_all_users), 200
 
 
 
