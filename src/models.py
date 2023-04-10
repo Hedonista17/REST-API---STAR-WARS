@@ -113,7 +113,7 @@ class Planet(db.Model):
         return {
           "id": self.id,
           "name":self.name,
-          "descirption":self.description,
+          "description":self.description,
           "population":self.population,
           "terrain": self.terrain,
           "climate":self.climate,
@@ -174,9 +174,9 @@ class Favorites(db.Model):
     people_id = db.Column(db.Integer, db.ForeignKey("people.id"))
     vehicles_id = db.Column(db.Integer, db.ForeignKey("vehicles.id"))
     user= db.relationship("User",back_populates = "favorites") ##union de clases y tabla    #relacion class y unir tablas- inner join                           #relacion entre las class 
-    planet= db.relationship("Planet")
-    people= db.relationship("People") #insertar en la tabla favoritos las clases 
-    vehicles= db.relationship("Vehicles")
+    planet= db.relationship("Planet",back_populates = "favorites")
+    people= db.relationship("People",back_populates = "favorites") #insertar en la tabla favoritos las clases 
+    vehicles= db.relationship("Vehicles",back_populates = "favorites")
     
 
     def __init__(self,user_id,planets_id,people_id,vehicles_id):

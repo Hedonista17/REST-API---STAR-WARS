@@ -74,7 +74,7 @@ def get_people_id(id):
 @app.route('/people', methods=['POST'])
 def create_people():
     data = request.get_json()
-    new_people =  People(data['name'], data['birth_date'],data['description'],data['eye_color'],data['hair_color'])
+    new_people =  People(data['name'], data['birth_day'],data['description'],data['eye_color'],data['hair_color'])
     db.session.add(new_people)
     db.session.commit()
     return jsonify(new_people.serialize()), 200
@@ -129,36 +129,73 @@ def get_favorites():
     return jsonify( serialize_favs), 200
 
 
-# @app.route('/favorites/planets', methods=['GET'])
-# def get_fav_planets():
-#     favs_planets = Favorites.query.get(planet) # consulta model.py
-#     return jsonify(favs_planets.serialize()), 200
+@app.route('/favorites/planets', methods=['GET'])
+def get_fav_planets():
+    planets_favs = Favorites.query.all() # consulta model.py
+    planets_favs = list(map(lambda fav : fav.planet.serialize(),planets_favs))
+    return jsonify(planets_favs)
+
+
+
+@app.route('/favorites/people', methods=['GET'])
+def get_fav_person():
+    people_favs = Favorites.query.all() # consulta model.py
+    person_favs = list(map(lambda fav : fav.people.serialize(),people_favs))
+    return jsonify(person_favs )
+
+@app.route('/favorites/vehicles', methods=['GET'])
+def get_fav_vehicles():
+    vehicles_favs = Favorites.query.all() # consulta model.py
+    car_favs = list(map(lambda fav : fav.vehicles.serialize(),vehicles_favs))
+    return jsonify(car_favs)
+
     
-# @app.route('/favorites/planets/<int:id>', methods=['POST'])
-# def favorite_planet(id):
-#     data = request.get_json(id)
-#     fav_planet =  Favorites(data['planet_id'])
-#     db.session.add(fav_planet)
-#     db.session.commit()
-#     return jsonify(fav_planet.serialize()), 200 # FALTA  LOS DELETE 
+@app.route('/favorites/planets/<int:id>', methods=['POST'])
+def favorite_planet():
+    fav_planet = Favorites(data['planet_id'],data['user_id'])
+    db.session.add(fav_planet)
+    db.session.commit()
+    return jsonify(fav_planet.serialize()), 200 
 
+@app.route('/favorites/people/<int:id>', methods=['POST'])
+def favorite_people():
+    fav_person = Favorites(data['people_id'],data['user_id'])
+    db.session.add(fav_person)
+    db.session.commit()
+    return jsonify(fav_person.serialize()), 200 
 
-# @app.route('/favorites/planets/<int:id>', methods=['POST'])
-# def favorite_planet(id):
-#     data = request.get_json(id)
-#     fav_planet =  Favorites(data['planet_id'])
-#     db.session.add(fav_planet)
-#     db.session.commit()
-#     return jsonify(fav_planet.serialize()), 200 # FALTA  LOS DELETE 
+@app.route('/favorites/vehicles/<int:id>', methods=['POST'])
+def favorite_vehicles():
+    fav_car = Favorites(data['vehicles_id'],data['user_id'])
+    db.session.add(fav_car)
+    db.session.commit()
+    return jsonify(fav_car.serialize()), 200 
+    
+@app.route('/favorites/planets/<int:id>', methods=['DELETE'])
+def delete_planet(id):
+     data = request.get_json(id)
+     delete_fav_planet = Favorites.query.get(data)
+     db.session.remove(delete_fav_planet)
+     db.session.commit()
+     return jsonify({"msg":"Planeta borrado"})
 
-
-# @app.route('/user/favorites', methods=['GET']) ## POR REVISAR // OBTENER LOS FAVORITOS DE CADA USUARIO // DESPUES BORRAR LOS FAVS POR USUARIO 
-# def get_users_favs():                          ## HACER UN POST 
-#     all_favs = Favorites.query.all() ## consulta model.py
-#     serialize_favs = list(map(lambda user : user.serialize(),all_favs)) #mapeo
-#     return jsonify(serialize_all_users), 200
-
-
+@app.route('/favorites/people/<int:id>', methods=['DELETE'])
+def delete_people(id):
+     data = request.get_json(id)
+     delete_fav_person = Favorites.query.get(data)
+     db.session.remove(delete_fav_person)
+     db.session.commit()
+     return jsonify({"msg":"Personaje borrado"})
+    
+    
+@app.route('/favorites/vehicles/<int:id>', methods=['DELETE'])
+def delete_vehicle(id):
+     data = request.get_json(id)
+     delete_fav_car = Favorites.query.get(data)
+     db.session.remove(delete_fav_car)
+     db.session.commit()
+     return jsonify({"msg":"Vehiculo borrado"})
+    
 
 
 
